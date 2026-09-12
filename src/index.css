@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+:root {
+  --header-height: theme(spacing.20);
+}
+
+#root {
+  height: 100vh;
+}

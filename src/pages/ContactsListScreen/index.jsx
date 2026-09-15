@@ -1,23 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../components/Button";
 import MainLayout from "../../components/layout/MainLayout";
 import TextField from "../../components/TextField";
 import { useChat } from "../../context/ChatContext";
+import { chat } from "../../services/chat";
 
-const fakeContacts = [
-  { id: 1, name: "Levi", phone: "11999990000" },
-  { id: 2, name: "Imbecil", phone: "11999990001" },
-  { id: 3, name: "Bluezao", phone: "11999990002" },
-];
+chat.listContacts();
 
-function ContactsListScreen() {
+export default function ContactsListScreen() {
   const navigate = useNavigate();
   const { logout } = useChat();
   const [search, setSearch] = useState("");
+  const [contacts, setContacts] = useState([]);
 
-  const filteredContacts = fakeContacts.filter((contact) =>
-    `${contact.name} ${contact.phone}`
+  useEffect(() => {
+    async function loadContacts() {
+      const data = await chat.listContacts();
+      setContacts(data);
+    }
+    loadContacts();
+  }, []);
+
+  const filteredContacts = contacts.filter((contact) =>
+    `${contact.displayName ?? contact.display_name} ${contact.phone}`
       .toLowerCase()
       .includes(search.toLowerCase()),
   );
@@ -40,11 +46,11 @@ function ContactsListScreen() {
           ) : (
             filteredContacts.map((contact) => (
               <Button
-                key={contact.id}
+                key={contact.phone}
                 onClick={() => navigate(`/chat/${contact.phone}`)}
               >
                 <span className="flex flex-col text-left">
-                  <strong>{contact.name}</strong>
+                  <strong>{contact.displayName ?? contact.display_name}</strong>
                   <span>{contact.phone}</span>
                 </span>
               </Button>
@@ -57,5 +63,3 @@ function ContactsListScreen() {
     </MainLayout>
   );
 }
-
-export default ContactsListScreen;

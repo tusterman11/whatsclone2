@@ -22,11 +22,14 @@ export default function ContactsListScreen() {
     loadContacts();
   }, []);
 
-  const filteredContacts = contacts.filter((contact) =>
-    `${contact.displayName ?? contact.display_name} ${contact.phone}`
-      .toLowerCase()
-      .includes(search.toLowerCase()),
-  );
+  const myPhone = localStorage.getItem("senac-phone");
+  const filteredContacts = contacts
+    .filter((contact) => contact.phone !== myPhone)
+    .filter((contact) =>
+      `${contact.displayName ?? contact.display_name} ${contact.phone}`
+        .toLowerCase()
+        .includes(search.toLowerCase()),
+    );
 
   return (
     <MainLayout title="Contatos" subtitle="Escolha uma conversa">
@@ -50,7 +53,7 @@ export default function ContactsListScreen() {
                 onClick={() => navigate(`/chat/${contact.phone}`)}
               >
                 <span className="flex flex-col text-left">
-                  <strong>{contact.displayName ?? contact.display_name}</strong>
+                  <strong>{contact.display_name}</strong>
                   <span>{contact.phone}</span>
                 </span>
               </Button>

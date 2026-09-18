@@ -1,13 +1,13 @@
-export default function ScreenHeader({ title, subtitle, onBack }) {
+function ScreenHeader({ title, subtitle, onBack }) {
   return (
     <div className="screen-header h-(--header-height) flex items-center gap-3 bg-emerald-800 p-3 text-white">
       {onBack && (
         <button
-          className="mr-2 text-xl leading-none text-white"
           onClick={onBack}
+          className="text-xl leading-none"
           aria-label="Back"
         >
-          Voltar
+          ←
         </button>
       )}
       <div>
@@ -17,3 +17,5 @@ export default function ScreenHeader({ title, subtitle, onBack }) {
     </div>
   );
 }
+
+export default ScreenHeader;

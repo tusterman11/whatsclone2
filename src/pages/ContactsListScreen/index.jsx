@@ -1,28 +1,25 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Button from "../../components/Button";
+import EmptyState from "../../components/EmptyState";
 import MainLayout from "../../components/layout/MainLayout";
+import ContactItem from "../../components/chatlist/ContactItem";
 import TextField from "../../components/TextField";
+import Button from "../../components/Button";
 import { useChat } from "../../context/ChatContext";
 import { chat } from "../../services/chat";
 
-chat.listContacts();
-
-export default function ContactsListScreen() {
-  const navigate = useNavigate();
+function ContactsListScreen() {
   const { logout } = useChat();
   const [search, setSearch] = useState("");
   const [contacts, setContacts] = useState([]);
+  const myPhone = localStorage.getItem("senac-phone");
 
   useEffect(() => {
     async function loadContacts() {
-      const data = await chat.listContacts();
-      setContacts(data);
+      setContacts(await chat.listContacts());
     }
     loadContacts();
   }, []);
 
-  const myPhone = localStorage.getItem("senac-phone");
   const filteredContacts = contacts
     .filter((contact) => contact.phone !== myPhone)
     .filter((contact) =>
@@ -32,7 +29,7 @@ export default function ContactsListScreen() {
     );
 
   return (
-    <MainLayout title="Contatos" subtitle="Escolha uma conversa">
+    <MainLayout title="Contatos" subtitle="Escolha uma Conversa">
       <div className="mx-auto flex max-w-xl flex-col gap-4">
         <TextField
           id="search-contacts"
@@ -43,26 +40,18 @@ export default function ContactsListScreen() {
 
         <div className="flex flex-col gap-2">
           {filteredContacts.length === 0 ? (
-            <p className="py-6 text-center text-gray-600">
-              Nenhum contato encontrado.
-            </p>
+            <EmptyState message="Nenhum contato encontrado." />
           ) : (
             filteredContacts.map((contact) => (
-              <Button
-                key={contact.phone}
-                onClick={() => navigate(`/chat/${contact.phone}`)}
-              >
-                <span className="flex flex-col text-left">
-                  <strong>{contact.display_name}</strong>
-                  <span>{contact.phone}</span>
-                </span>
-              </Button>
+              <ContactItem key={contact.phone} contact={contact} />
             ))
           )}
         </div>
 
-        <Button onClick={logout}>Sair</Button>
+        <Button onClick={logout}>Log out</Button>
       </div>
     </MainLayout>
   );
 }
+
+export default ContactsListScreen;
